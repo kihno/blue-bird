@@ -1,15 +1,13 @@
 'use client'
 
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { revalidatePath } from "next/cache"
 import { useRouter } from "next/navigation"
-import { useReducer } from "react"
 
-export default function Likes({ tweet }) {
+export default function Likes({ tweet }: { tweet: TweetWithAuthor }) {
     const router = useRouter()
 
     const handleLikes = async () => {
-        const supabase = createClientComponentClient()
+        const supabase = createClientComponentClient<Database>()
         const { data: { user } } = await supabase.auth.getUser()
 
         if (user) {
