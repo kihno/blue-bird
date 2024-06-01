@@ -1,7 +1,7 @@
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs"
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import AuthButtonClient from "../auth-button-client"
+import GitHubButton from "./github-button"
 
 export default async function Login() {
     const supabase = createServerComponentClient<Database>({ cookies })
@@ -14,5 +14,9 @@ export default async function Login() {
         redirect('/')
     }
 
-    return <AuthButtonClient session={session} />
+    return (
+      <div className="flex-1 flex justify-center items-center">
+        <GitHubButton />
+      </div>
+    )
 }
