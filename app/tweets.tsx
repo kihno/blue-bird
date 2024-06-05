@@ -7,6 +7,20 @@ import { useRouter } from "next/navigation"
 import Image from "next/image"
 
 export default function Tweets({ tweets }: { tweets: TweetWithAuthor[] }) {
+  const [optimisticTweets, addOptimisticTweet] = useOptimistic<TweetWithAuthor[], TweetWithAuthor>(
+    tweets,
+    (currentOptimisticTweets, newTweet) => {
+        const newOptimisticTweets = [...currentOptimisticTweets]
+        const index = newOptimisticTweets.findIndex(tweet =>
+            tweet.id === newTweet.id
+        )
+
+        newOptimisticTweets[index] = newTweet
+
+        return newOptimisticTweets
+    }
+  )
+
     const supabase = createClientComponentClient()
     const router = useRouter()
     
@@ -25,27 +39,13 @@ export default function Tweets({ tweets }: { tweets: TweetWithAuthor[] }) {
                 supabase.removeChannel(channel)
             }
     }, [supabase, router])
-
-    const [optimisticTweets, addOptimisticTweet] = useOptimistic<TweetWithAuthor[], TweetWithAuthor>(
-        tweets,
-        (currentOptimisticTweets, newTweet) => {
-            const newOptimisticTweets = [...currentOptimisticTweets]
-            const index = newOptimisticTweets.findIndex(tweet =>
-                tweet.id === newTweet.id
-            )
-
-            newOptimisticTweets[index] = newTweet
-
-            return newOptimisticTweets
-        }
-    )
     
     return (
         <>
             {optimisticTweets.map(tweet => (
                 <div key={tweet.id} className="border border-gray-800 border-t-0 px-4 py-8 flex">
                   <div className="h-12 w-12">
-                    <Image className="rounded-full" src={tweet.author.avatar_url} alt="tweet user avatar" width={48} height={48} />
+                    <Image className="rounded-full" src={tweet.author.avatar_url ? tweet.author.avatar_url : ''} alt="tweet user avatar" width={48} height={48} />
                   </div>
                   <div className="ml-4">
                     <p>
